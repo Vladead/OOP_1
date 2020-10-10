@@ -3,18 +3,38 @@ import java.lang.IllegalArgumentException
 class Matrix(val rows: Int, val columns: Int) {
     private val matrix: Array<Double> = Array(rows * columns) { 0.0 }
 
-    fun get(row: Int, column: Int): Double {
+    operator fun get(row: Int, column: Int): Double {
         if (row <= rows && column <= columns && row > 0 && column > 0)
             return matrix[(row - 1) * columns + column - 1]
         else
-            throw IllegalArgumentException("get[$row, $column]")
+            throw IllegalArgumentException("get[$row, $column] in [$rows, $columns] matrix")
     }
 
-    fun set(row: Int, column: Int, number: Double) {
+    operator fun set(row: Int, column: Int, number: Double) {
         if (row <= rows && column <= columns && row > 0 && column > 0)
             matrix[(row - 1) * columns + column - 1] = number
         else
-            throw IllegalArgumentException("set[$row, $column]")
+            throw IllegalArgumentException("set[$row, $column] in [$rows, $columns] matrix")
+    }
+
+    fun det(): Double? {
+        return if (rows == columns) {
+            // Going with the triangle-shaped (aka Gaussian) determinant calculation method.
+            // Thus, copying the whole matrix for the sake of safety
+            val changedMatrix = this * 1.0
+            for (rowBase in 1 until rows)
+                for (rowChange in rowBase+1 until rows+1) {
+                    val coeff = -changedMatrix[rowChange, rowBase]/changedMatrix[rowBase,rowBase]
+                    for (column in 1..columns)
+                        changedMatrix[rowChange,column] += changedMatrix[rowBase,column]*coeff
+                }
+
+            var a = 1.0
+            for (i in 1..rows)
+                a *= changedMatrix[i,i]
+            a
+        } else
+            null
     }
 
     operator fun plus(b: Matrix): Matrix {
@@ -45,7 +65,7 @@ class Matrix(val rows: Int, val columns: Int) {
             for (i in 1..rows)
                 for (j in 1..b.columns)
                     for (k in 1..columns) {
-                        c.set(i, j, c.get(i, j) + get(i, k) * b.get(k, j))
+                        c[i, j] = c[i, j] + this[i, k] * b[k, j]
                     }
             return c
         } else
@@ -56,13 +76,6 @@ class Matrix(val rows: Int, val columns: Int) {
         val c = Matrix(rows, columns)
         for (i in matrix.indices)
             c.matrix[i] = matrix[i] * b
-        return c
-    }
-
-    operator fun Double.times(b: Matrix): Matrix {
-        val c = Matrix(rows, columns)
-        for (i in matrix.indices)
-            c.matrix[i] = this * b.matrix[i]
         return c
     }
 
@@ -78,4 +91,12 @@ class Matrix(val rows: Int, val columns: Int) {
         }
         return s
     }
+}
+
+operator fun Double.times(b: Matrix): Matrix {
+    val c = Matrix(b.rows, b.columns)
+    for (i in 1..b.rows)
+        for (j in 1..b.columns)
+            c[i,j] = b[i,j] * this
+    return c
 }

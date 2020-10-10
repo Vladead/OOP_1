@@ -1,4 +1,4 @@
-import java.lang.IllegalArgumentException
+import kotlin.IllegalArgumentException
 
 class Matrix(val rows: Int, val columns: Int) {
     private val matrix: Array<Double> = Array(rows * columns) { 0.0 }
@@ -17,16 +17,16 @@ class Matrix(val rows: Int, val columns: Int) {
             throw IllegalArgumentException("set[$row, $column] in [$rows, $columns] matrix")
     }
 
-    fun det(): Double? {
+    fun det(): Double {
         return if (rows == columns) {
             // Going with the triangle-shaped (aka Gaussian) determinant calculation method.
             // Thus, copying the whole matrix for the sake of safety
             val changedMatrix = this * 1.0
             for (rowBase in 1 until rows)
-                for (rowChange in rowBase+1 until rows+1) {
-                    val coeff = -changedMatrix[rowChange, rowBase]/changedMatrix[rowBase,rowBase]
+                for (rowChange in rowBase + 1 until rows + 1) {
+                    val coeff = -changedMatrix[rowChange, rowBase] / changedMatrix[rowBase,rowBase]
                     for (column in 1..columns)
-                        changedMatrix[rowChange,column] += changedMatrix[rowBase,column]*coeff
+                        changedMatrix[rowChange,column] += changedMatrix[rowBase,column] * coeff
                 }
 
             var a = 1.0
@@ -34,7 +34,7 @@ class Matrix(val rows: Int, val columns: Int) {
                 a *= changedMatrix[i,i]
             a
         } else
-            null
+            throw IllegalArgumentException("Tried to get of non square matrix")
     }
 
     operator fun plus(b: Matrix): Matrix {
@@ -81,15 +81,20 @@ class Matrix(val rows: Int, val columns: Int) {
 
     override fun toString(): String {
         var s = String()
-        s += '\n'
         for (i in 1..rows) {
             for (j in 1..columns) {
                 s += get(i, j)
                 s += ' '
             }
-            s += '\n'
         }
         return s
+    }
+
+    init {
+        if (rows < 0 || columns < 0)
+            throw IllegalArgumentException("Can not create negative matrix")
+        if (rows == 0 || columns == 0)
+            throw IllegalArgumentException("Can not create zero matrix")
     }
 }
 

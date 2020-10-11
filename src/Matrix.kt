@@ -24,14 +24,14 @@ class Matrix(val rows: Int, val columns: Int) {
             val changedMatrix = this * 1.0
             for (rowBase in 1 until rows)
                 for (rowChange in rowBase + 1 until rows + 1) {
-                    val coeff = -changedMatrix[rowChange, rowBase] / changedMatrix[rowBase,rowBase]
+                    val coefficient = -changedMatrix[rowChange, rowBase] / changedMatrix[rowBase, rowBase]
                     for (column in 1..columns)
-                        changedMatrix[rowChange,column] += changedMatrix[rowBase,column] * coeff
+                        changedMatrix[rowChange, column] += changedMatrix[rowBase, column] * coefficient
                 }
 
             var a = 1.0
             for (i in 1..rows)
-                a *= changedMatrix[i,i]
+                a *= changedMatrix[i, i]
             a
         } else
             throw IllegalArgumentException("Tried to get of non square matrix")
@@ -90,6 +90,30 @@ class Matrix(val rows: Int, val columns: Int) {
         return s
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other)
+            return true
+        if (other !is Matrix)
+            return false
+        else
+        {
+            if (rows != other.rows || columns != other.columns)
+                return false
+            for (i in 0..rows)
+                for (j in 0..columns)
+                    if (this[i, j] != other[i, j])
+                        return false
+            return true
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = rows
+        result = 31 * result + columns
+        result = 31 * result + matrix.contentHashCode()
+        return result
+    }
+
     init {
         if (rows < 0 || columns < 0)
             throw IllegalArgumentException("Can not create negative matrix")
@@ -102,6 +126,6 @@ operator fun Double.times(b: Matrix): Matrix {
     val c = Matrix(b.rows, b.columns)
     for (i in 1..b.rows)
         for (j in 1..b.columns)
-            c[i,j] = b[i,j] * this
+            c[i, j] = b[i, j] * this
     return c
 }

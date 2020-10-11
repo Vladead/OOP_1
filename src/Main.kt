@@ -20,4 +20,5 @@ fun main(args: Array<String>) {
  println(a * b)
  println(b + b + b - b * 3.0 + 3.0 * b)
  println(b.det())
+ println(a == b)
 }

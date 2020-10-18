@@ -86,6 +86,7 @@ class Matrix(val rows: Int, val columns: Int) {
                 s += get(i, j)
                 s += ' '
             }
+            s += '\n'
         }
         return s
     }

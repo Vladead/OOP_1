@@ -21,4 +21,5 @@ fun main(args: Array<String>) {
  println(b + b + b - b * 3.0 + 3.0 * b)
  println(b.det())
  println(a == b)
+ println(a.rows.toString() + ' ' + a.columns.toString())
 }
